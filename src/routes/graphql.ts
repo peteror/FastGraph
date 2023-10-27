@@ -95,7 +95,6 @@ export const graphql: Handler = async function (req, res) {
 
     if (!isMutationRequest) {
       content = normalizeDocument(originalBody.query)
-
       if (inspectSchema) {
         const schema = await findSchema()
         if (schema && !graphQLSchema) {
@@ -135,7 +134,7 @@ export const graphql: Handler = async function (req, res) {
     isMutationRequest === false &&
     (hasPrivateTypes || scope === Scope.AUTHENTICATED || authRequired)
 
-  
+
   /**
    *  In case of the query will return user specific data the response
    *  is cached user specific based on the Authorization header
@@ -156,9 +155,9 @@ export const graphql: Handler = async function (req, res) {
         defaultResponseHeaders[HTTPHeaders.fgScope] = Scope.AUTHENTICATED
     } else {
         querySignature = await SHA256(content + variables)
-    } 
+    }
     */
-    if (operationName == 'home') {
+    if (operationName == 'Home') {
         querySignature = await SHA256(authorizationHeader + content + variables)
     } else {
         querySignature = await SHA256(content + variables)
@@ -173,6 +172,7 @@ export const graphql: Handler = async function (req, res) {
     cacheKey += querySignature
 
     cacheUrl.pathname = cacheUrl.pathname + cacheKey
+
     cacheRequest = new Request(cacheUrl.toString(), {
       headers: req.headers,
       method: 'GET',
@@ -181,8 +181,10 @@ export const graphql: Handler = async function (req, res) {
     let response = await cache.match(cacheRequest)
 
     if (response) {
-      return response
+        console.log("cache hit: "+originalBody.operationName+"|"+cacheRequest.url)
+        return response
     }
+    console.log("cache miss: "+originalBody.operationName+"|"+cacheRequest.url)
   }
 
   /**
@@ -194,7 +196,7 @@ export const graphql: Handler = async function (req, res) {
   try {
     const forwardedHeaders = new Headers()
     forwardedHeaders.append(HTTPHeaders.contentType, 'application/json')
-  
+
     if (authorizationHeader) {
       forwardedHeaders.append(HTTPHeaders.authorization, authorizationHeader)
     }
