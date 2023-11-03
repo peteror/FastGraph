@@ -146,24 +146,26 @@ export const graphql: Handler = async function (req, res) {
   /**
    * Check if query is in the cache
    */
-  if (isMutationRequest === false && genericTypes != null && genericTypes.includes(operationName)) {
+  if (isMutationRequest === false){
+    // && genericTypes != null && genericTypes.includes(operationName)) {
     let cacheKey = ''
 
-    /**
     if (isPrivateAndCacheable) {
         querySignature = await SHA256(authorizationHeader + content + variables)
         defaultResponseHeaders[HTTPHeaders.fgScope] = Scope.AUTHENTICATED
     } else {
         querySignature = await SHA256(content + variables)
     }
-    */
-    if (operationName == 'Home') {
+
+    /**if (operationName == 'Home') {
         querySignature = await SHA256(authorizationHeader + content + variables)
+        defaultResponseHeaders[HTTPHeaders.fgScope] = Scope.AUTHENTICATED
     } else {
         querySignature = await SHA256(content + variables)
-    }
+    }*/
 
     const cacheUrl = new URL(req.url)
+    console.log (variables.toString())
 
     if (originalBody.operationName) {
       cacheKey += originalBody.operationName + '/'
